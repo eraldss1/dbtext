@@ -45,7 +45,7 @@ public class textFileToTable extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         dataTable = new javax.swing.JTable();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        progressBar = new javax.swing.JProgressBar();
         loadFromDbBtn = new javax.swing.JButton();
         saveToDbBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -107,7 +107,7 @@ public class textFileToTable extends javax.swing.JFrame {
             dataTable.getColumnModel().getColumn(2).setResizable(false);
         }
 
-        jProgressBar1.setPreferredSize(new java.awt.Dimension(350, 15));
+        progressBar.setPreferredSize(new java.awt.Dimension(350, 15));
 
         loadFromDbBtn.setText("Load from DB");
         loadFromDbBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -264,7 +264,7 @@ public class textFileToTable extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(loadFromDbBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -283,7 +283,7 @@ public class textFileToTable extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(loadFromDbBtn)
@@ -309,10 +309,14 @@ public class textFileToTable extends javax.swing.JFrame {
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));
             Object[] tableLines = br.lines().toArray();
-            for (Object tableLine : tableLines) {
-                String line = tableLine.toString().trim();
+            for(int i = 0; i < tableLines.length; i++){
+                String line = tableLines[i].toString().trim();
                 String[] dataRow = line.split(",");
                 model.addRow(dataRow);
+                
+                float progress = i * 100 / tableLines.length;
+                System.out.println(progress);
+                progressBar.setValue((int) progress);
             }
         }
         catch(Exception ex){
@@ -461,7 +465,6 @@ public class textFileToTable extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -470,6 +473,7 @@ public class textFileToTable extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JButton loadFromDbBtn;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton saveToDbBtn;
     private javax.swing.JButton updateDataBtn;
     private javax.swing.JTextPane updateDebitTB;
