@@ -29,6 +29,9 @@ public class textFileToTable extends javax.swing.JFrame {
     
     String projectPath = System.getProperty("user.dir").toString();
     int selectedRow;
+    int kredit_total;
+    int debit_total;
+    int pendapatan_bersih;
     
     public textFileToTable() {
         initComponents();
@@ -70,6 +73,8 @@ public class textFileToTable extends javax.swing.JFrame {
         updateDebitTB = new javax.swing.JTextPane();
         jScrollPane7 = new javax.swing.JScrollPane();
         updateKreditTB = new javax.swing.JTextPane();
+        jLabel7 = new javax.swing.JLabel();
+        totalLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("MainFrame"); // NOI18N
@@ -255,29 +260,41 @@ public class textFileToTable extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel7.setText("Total :");
+
+        totalLabel.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(loadFromDbBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(saveToDbBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(totalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(loadFromDbBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(saveToDbBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -287,9 +304,11 @@ public class textFileToTable extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(loadFromDbBtn)
-                            .addComponent(saveToDbBtn))
-                        .addGap(0, 124, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                            .addComponent(saveToDbBtn))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                    .addComponent(totalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -299,6 +318,9 @@ public class textFileToTable extends javax.swing.JFrame {
     // Tombol Load from DB
     // Saat ditekan tombol Load from DB akan dilakukan blok program ini
     private void loadFromDbBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadFromDbBtnActionPerformed
+        
+        debit_total = 0;
+        kredit_total = 0;
         
         // getModel() untuk menggunakan model dari table kita
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
@@ -322,11 +344,17 @@ public class textFileToTable extends javax.swing.JFrame {
                 String[] dataRow = line.split(",");
                 model.addRow(dataRow);
                 
+                debit_total += Integer.parseInt(dataRow[1]);
+                kredit_total += Integer.parseInt(dataRow[2]);
+                
                 // Untuk progress bar
                 float progress = i * 100 / tableLines.length;
                 System.out.println(progress);
                 progressBar.setValue((int) progress);
             }
+            
+            pendapatan_bersih = debit_total - kredit_total;
+            totalLabel.setText(String.valueOf(pendapatan_bersih));
         }
         catch(Exception ex){
             System.out.println(ex.toString());
@@ -432,6 +460,19 @@ public class textFileToTable extends javax.swing.JFrame {
         String debit = updateDebitTB.getText();
         String kredit = updateKreditTB.getText();
         
+        if(debit.isEmpty()){
+            debit = "0";
+        }
+
+        if(kredit.isEmpty()){
+            kredit = "0";
+        }
+        
+        debit_total += Integer.parseInt(debit);
+        kredit_total += Integer.parseInt(kredit);
+        pendapatan_bersih = debit_total - kredit_total;
+        totalLabel.setText(String.valueOf(pendapatan_bersih));
+        
         model.setValueAt(description, selectedRow, 0);
         model.setValueAt(debit, selectedRow, 1);
         model.setValueAt(kredit, selectedRow, 2);
@@ -485,6 +526,7 @@ public class textFileToTable extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
@@ -497,6 +539,7 @@ public class textFileToTable extends javax.swing.JFrame {
     private javax.swing.JButton loadFromDbBtn;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton saveToDbBtn;
+    private javax.swing.JLabel totalLabel;
     private javax.swing.JButton updateDataBtn;
     private javax.swing.JTextPane updateDebitTB;
     private javax.swing.JTextPane updateDescriptionTB;
