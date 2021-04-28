@@ -296,24 +296,33 @@ public class textFileToTable extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
    
+    // Tombol Load from DB
+    // Saat ditekan tombol Load from DB akan dilakukan blok program ini
     private void loadFromDbBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadFromDbBtnActionPerformed
-        // TODO add your handling code here:
+        
+        // getModel() untuk menggunakan model dari table kita
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        
+        // Untuk mengosongkan table sebelum di Load
+        // Jika tidak dikosongkan maka akan duplikat
         model.setRowCount(0);
         
+        // Path file kita akan sesuai dengan dimana projrct kita disimpan
+        // projectPath ada di kelas utama sebagai konstanta
         String fileName = "data.txt";
         String filePath = projectPath + "\\" + fileName;
         File file = new File(filePath);
-        
-        
+                
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));
             Object[] tableLines = br.lines().toArray();
             for(int i = 0; i < tableLines.length; i++){
+                // Ambil perbaris dari file text, masukkan satu persatu ke dalam table
                 String line = tableLines[i].toString().trim();
                 String[] dataRow = line.split(",");
                 model.addRow(dataRow);
                 
+                // Untuk progress bar
                 float progress = i * 100 / tableLines.length;
                 System.out.println(progress);
                 progressBar.setValue((int) progress);
@@ -324,6 +333,8 @@ public class textFileToTable extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loadFromDbBtnActionPerformed
 
+    // Tombol save (untuk add data)
+    // Bagian untuk memasukkan data baru
     private void addDataBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataBtnActionPerformed
         // TODO add your handling code here:
         String description;
@@ -333,6 +344,9 @@ public class textFileToTable extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
         
         try{
+            // isEmpty itu untuk ngecek, kosong atau engga form kita di app
+            // kalo deskripsi kosong, gabisa add barang
+            // kalo debit atau kredit kosong, bisa add barang, tapi auto jadi 0 kredit atau debitnya
             description = addDescriptionTB.getText().trim();
             if(description.isEmpty()){
                 add = false;
@@ -357,9 +371,10 @@ public class textFileToTable extends javax.swing.JFrame {
             System.out.println(ex.toString());
         }        
     }//GEN-LAST:event_addDataBtnActionPerformed
-
+    
+    // Tombol save to DB
+    // Bagian untuk save data di table kita ke dalam file text
     private void saveToDbBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveToDbBtnActionPerformed
-        // TODO add your handling code here:
         String fileName = "data.txt";
         String filePath = projectPath + "\\" + fileName;
         File file = new File(filePath);
@@ -368,17 +383,21 @@ public class textFileToTable extends javax.swing.JFrame {
             if(!file.exists()){
                 file.createNewFile();
             }
+            
+            // File writer untuk membuat file 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-               BufferedWriter bw = new BufferedWriter(fw);
+            
+            // buffer writer ini buat temporary write sebelum di overwrite ke dalam txt nya
+            BufferedWriter bw = new BufferedWriter(fw);
 
-               for(int i = 0; i < dataTable.getRowCount(); i++){
-                   for(int j = 0; j < dataTable.getColumnCount(); j++){
-                       bw.write(dataTable.getModel().getValueAt(i, j) + ",");
-                   }
-                   bw.write("\n");
-               }
-               bw.close();
-               fw.close();
+            for(int i = 0; i < dataTable.getRowCount(); i++){
+                for(int j = 0; j < dataTable.getColumnCount(); j++){
+                    bw.write(dataTable.getModel().getValueAt(i, j) + ",");
+                }
+                bw.write("\n");
+            }
+            bw.close();
+            fw.close();
         }
         catch(IOException ex){
             System.out.println(ex.toString());
@@ -386,6 +405,7 @@ public class textFileToTable extends javax.swing.JFrame {
         
     }//GEN-LAST:event_saveToDbBtnActionPerformed
 
+    // Kalau ada bagian dari table yang di klik, otomatis terisi ke kotak bagian update
     private void dataTableMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataTableMousePressed
         // TODO add your handling code here:
         selectedRow = dataTable.rowAtPoint(evt.getPoint());
@@ -403,6 +423,8 @@ public class textFileToTable extends javax.swing.JFrame {
         updateKreditTB.setText(kredit);
     }//GEN-LAST:event_dataTableMousePressed
 
+    // kalau misal data yang udah ada di kotak update mau dimasukkan ke dalam table
+    // maka bagian ini yang dijalankan
     private void updateDataBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateDataBtnActionPerformed
         // TODO add your handling code here:
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
